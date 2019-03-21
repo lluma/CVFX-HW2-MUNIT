@@ -1,6 +1,6 @@
 
 # CVFX HW2 Report  - Team 16 
-## Members: 王科鈞 104062226, 鄭凱文 104062223, 王鴻鈞 104062332
+
 ### 1. Training MUNIT
 ### Training 
 Start
@@ -9,8 +9,10 @@ Start
 Finish
 ![](https://i.imgur.com/uzHg6vX.png)
 
-### 2. Inference one image in multiple style
-## MUNIT
+
+---
+
+### 2. Inference one image in multiple style - MUNIT
 ### Introduction
 本篇 paper 的主要貢獻在於他允許一張圖片輸出多張圖片，並保留原圖的 content，只轉變成不同styles。
 
@@ -43,7 +45,7 @@ Model 中對圖片的轉換方式如下。
 
 我們希望自己的 latent reconstruction error 要最小，
 - 意思是大眼睛的狗狗丟進model也要生出大眼睛的貓咪希望x和y的content code相近。
-- 意思是科基狗丟進decoder解碼後再編碼還能夠知道這style code是柯基狗
+- 意思是柯基狗丟進decoder解碼後再編碼還能夠知道這style code是柯基狗
 希望 x 和 y 的 style code 相近。
 
 ### Inference
@@ -62,16 +64,16 @@ Reference - Toward Multimodal Image-to-Image Translation [[Paper]](https://arxiv
 BicycleGAN是一種Supervised way Multimodal image-to-image translation structure，其貢獻在於接著CycleGAN的成功之下，算是很早期挑戰Multimodal的方法，並能有效解決mode collapse problem。
 
     * 何謂mode collapse: 
-        在VAE中，是透過將目標圖片先轉成低維度的Latent vector，再將其轉換回Output photo，於早期的pix2pix structure中，是透過簡單的混入noise於Laten vector中，希望藉由加上隨機的參數，產生多變化的結果，但根據實驗發現，添加的noise會被Generator給忽略，導致長時間訓練過後依然會趨向單一結果。
+        在VAE中，是透過將目標圖片先轉成低維度的Latent vector，再將其轉換回Output photo，於早期的pix2pix structure中，是透過簡單的混入noise於Laten vector中，希望藉由加上隨機的參數，產生多變化的結果，但根據實驗發現，添加的noise易被Generator給忽略，導致長時間訓練過後依然會趨向單一結果。
 
     BicycleGAN為了解決這個問題，提出了一個結合兩種GAN結構的方式，讓Latent vector & Output形成一個Bijection(即不同的Latent vector必連接著不同的Output)，架構圖如下：<br>
     ![](https://i.imgur.com/PFvVpY7.png)
     * First part - cVAE-GAN (B -> z -> predict B)
-        在pix2pix中loss是拿Input & noise合成的結果，與Ground truth做比較，Truth與Latent本身並無直接關聯，會容易出現mode collapse，因此cVAE-GAN這邊為了達成Bijection，直接將Ground truth透過Encoder得到其Latent vector，再與Input經Generator生成結果，保證了B -> z，z為單一，而延伸至Conditional scenario，藉由讓E(B)、即中間產生z結果趨向Gaussian distribution (By加入KL-divergence loss)，保證實際Inference(不知道Ground truth B)時，使用的隨機Latent vector，能代表合理的Style latent。
+        在pix2pix中loss是拿Input & noise合成的結果，與Ground truth做比較，Truth與Latent本身並無直接關聯，會容易出現mode collapse，因此cVAE-GAN這邊為了達成Bijection，直接將Ground truth透過Encoder得到其Latent vector，再與Input經Generator生成結果，保證了B -> z，z為單一，而延伸至Conditional scenario，藉由讓E(B)、即中間產生z結果趨向Gaussian distribution (By加入KL-divergence loss)，保證實際Inference(不知道Ground truth B)時，使用的隨機Latent vector，能代表合理的Style latent。<br>
         ![](https://i.imgur.com/82ilxpR.png)
 
     * Second part - cLR-GAN (z -> predict B -> predict z)
-        與上述相對應，cLR則是先讓Input & noise經Generator產生一預測結果圖，再拿noise與預測結果Encoder得回的Latent vector作比較，保證z -> B的方向也只存在一種結果。另外不必考慮Ground truth和預測結果的loss，因為我們希望能有多樣性、Style不局限於Training dataset，但依舊要考慮discriminator loss，如此才能讓結果盡可能的"real"。
+        與上述相對應，cLR則是先讓Input & noise經Generator產生一預測結果圖，再拿noise與預測結果Encoder得回的Latent vector作比較，保證z -> B的方向也只存在一種結果。另外不必考慮Ground truth和預測結果的loss，因為我們希望能有多樣性、Style不局限於Training dataset，但依舊要考慮discriminator loss，如此才能讓結果盡可能的"real"。<br>
         ![](https://i.imgur.com/rGAoqp3.png)
 
     
@@ -88,5 +90,3 @@ BicycleGAN是一種Supervised way Multimodal image-to-image translation structur
 | ![](https://i.imgur.com/0x8ySEM.jpg) | ![](https://i.imgur.com/XtfnAIB.png) | ![](https://i.imgur.com/9REIm3A.png)| ![](https://i.imgur.com/qqtcFEL.png) |
 
 由圖可知，其實後出的MUNIT，結果並不比BicycleGAN優秀，特別是細節的表現處，MUNIT在填補鞋子的接縫處，都有明顯的缺陷(可能被試作鞋子內部，導致填色上不自然)，這點跟BicycleGAN是Supervised way、Training時就有實際鞋子結構參考應該有很大的關係，畢竟在Edge photo細節不夠下，Unsupervised way預測的一定會與現實有出入，可以看到在細節處比較完善的第三種鞋款，MUNIT的表現就不輸BicycleGAN，加上一般圖片Ground truth難以取得，擁有Unsupervised優勢的MUNIT，其發展性仍比BicycleGAN高。
-
-
