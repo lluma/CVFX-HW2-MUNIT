@@ -10,6 +10,7 @@ Finish
 ![](https://i.imgur.com/uzHg6vX.png)
 
 
+
 ---
 
 ### 2. Inference one image in multiple style - MUNIT
@@ -57,6 +58,9 @@ Model 中對圖片的轉換方式如下。
 
 由於MUNIT將整個轉換流程拆成2個步驟，分別為content與style，在轉換的過程中可以針對不同的部位來進行，所以可以很清楚地根據這種特徵去轉換不同部位的風格，尤其是在最右邊的黑色轉換，可以很明顯看出物件原本的輪廓，又不失想要轉換的風格，甚至一些反光的部分效果也都不錯。相較下來，中間橘色的轉換效果就並不是很好，有一些地方的上色並不是很均勻，可以看出明顯的色差，這讓結果顯得有一些不自然，不過造成這樣的成果也有可能是因為input的style顏色較為複雜，右邊是單純的黑色，但是中間的則有明顯的漸層，鞋子內部的顏色也有明顯的差別，間接可能也就造成了這個結果。
 
+
+---
+
 ### 3. Compare with other method - BicycleGAN
 Reference - Toward Multimodal Image-to-Image Translation [[Paper]](https://arxiv.org/abs/1711.11586) [[Code]](https://github.com/junyanz/BicycleGAN)
 
@@ -90,3 +94,5 @@ BicycleGAN是一種Supervised way Multimodal image-to-image translation structur
 | ![](https://i.imgur.com/0x8ySEM.jpg) | ![](https://i.imgur.com/XtfnAIB.png) | ![](https://i.imgur.com/9REIm3A.png)| ![](https://i.imgur.com/qqtcFEL.png) |
 
 由圖可知，其實後出的MUNIT，結果並不比BicycleGAN優秀，特別是細節的表現處，MUNIT在填補鞋子的接縫處，都有明顯的缺陷(可能被試作鞋子內部，導致填色上不自然)，這點跟BicycleGAN是Supervised way、Training時就有實際鞋子結構參考應該有很大的關係，畢竟在Edge photo細節不夠下，Unsupervised way預測的一定會與現實有出入，可以看到在細節處比較完善的第三種鞋款，MUNIT的表現就不輸BicycleGAN，加上一般圖片Ground truth難以取得，擁有Unsupervised優勢的MUNIT，其發展性仍比BicycleGAN高。
+
+
